@@ -29,7 +29,6 @@ pragma solidity ^0.8.18;
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/VRFCoordinatorV2.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-
 /**
  * @title A Sample Raffle Contract
  * @author 0xkumar
@@ -37,11 +36,16 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2
  * @dev Implements chainlik VRFv2
  */
 
-contract Raffl is VRFConsumerBaseV2{
+contract Raffle is VRFConsumerBaseV2{
 
     error Raffle_NotEnoughEthSent();
     error Raffle_TransferFailed();
     error Raffle_RaffleNotOpened();
+    error Raffle__UpKeepNotNeeded(
+        uint256 balance,
+        uint256 numPlayers,
+        uint256 raffleState
+    );
 
     /**bool lottery = open,closed,calculating
      * type declarations
@@ -108,6 +112,7 @@ contract Raffl is VRFConsumerBaseV2{
      * 3.The contract has ETH (aka, players)
      * 4.(I,plicit) The subscription is fundedwith link
      */
+
     function checkUpkeep(bytes memory /**checkData*/) public view returns(bool upkeepNeeded, bytes memory /** performData */){
         bool timeHasPassed = (block.timestamp - s_lastTimeStamp) >= i_interval;
         bool isOpen = s_Rafflestate == Rafflestate.open;
@@ -120,14 +125,22 @@ contract Raffl is VRFConsumerBaseV2{
      * 2.Use the random number to pick a winner 
      * 3.Be automatically called
      */
-    function pickWinner() public {
-        if((block.timestamp - s_lastTimeStamp) < i_interval){
-            revert();
+
+     function performUpkeep(bytes calldata /* performData */) external {
+        (bool upkeepNeeded,) = checkUpkeep("");
+        if (!upkeepNeeded){
+            revert Raffle__UpKeepNotNeeded(
+                address(this).balance,
+                s_players.length,
+                uint256(s_Rafflestate)
+
+            );
         }
+
         s_Rafflestate = Rafflestate.calculating;
         //1.request the RNG
         //2.Get the random number
-        uint256 requestId = i_vrfCoordinator.requestRandomWords(
+        i_vrfCoordinator.requestRandomWords(
             i_gaslane, //gas lane
             i_subscriptionId, 
             REQUEST_CONFIRMATIONS, //no.of block confirmations for your random number to be considered to be good
@@ -138,7 +151,7 @@ contract Raffl is VRFConsumerBaseV2{
     }
 
     function fulfillRandomWords(
-        uint256 requestId,
+        uint256 /*requestId*/,
         uint256[] memory randomwords
     ) internal override {
         //checks
@@ -170,3 +183,4 @@ contract Raffl is VRFConsumerBaseV2{
 
     }
 }
+ 
