@@ -6,7 +6,7 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 
 contract DeployRaffle is Script{
 
-    function run() external returns (Raffle){
+    function run() external returns (Raffle,HelperConfig){
         HelperConfig helperConfig = new HelperConfig();
         //NetworkConfig  config = helperConfig.ActiveNetworkConfig(); /** below is the nother way for this */
         (
@@ -22,7 +22,7 @@ contract DeployRaffle is Script{
         Raffle raffle = new Raffle(entranceFee,interval,vrfCoordinator,gaslane,subscriptionId,callbackGasLimit);
 
         vm.stopBroadcast();
-        return raffle;
+        return (raffle,helperConfig);
     }
 
 

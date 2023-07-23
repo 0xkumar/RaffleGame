@@ -13,11 +13,16 @@ contract HelperConfig is Script{
         uint32 callbackGasLimit;
         address vrfCoordinator;
     }
+
+ 
     NetworkConfig public ActiveNetworkConfig;
 
     constructor() {
         if (block.chainid ==1115511){
            ActiveNetworkConfig =  getSepoliaEthConfig();
+        }
+        else{
+            ActiveNetworkConfig = GetOrCreateAnvilEthConfig();
         }
     }
 

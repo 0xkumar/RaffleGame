@@ -24,11 +24,12 @@
 //CEI : checks-effects-interactions
 
 //SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.18;
 
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/VRFCoordinatorV2.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
-
+import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/interfaces/AutomationCompatibleInterface.sol";
 /**
  * @title A Sample Raffle Contract
  * @author 0xkumar
@@ -36,7 +37,7 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2
  * @dev Implements chainlik VRFv2
  */
 
-contract Raffle is VRFConsumerBaseV2{
+contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
     error Raffle_NotEnoughEthSent();
     error Raffle_TransferFailed();
@@ -70,7 +71,7 @@ contract Raffle is VRFConsumerBaseV2{
     address payable[] private s_players;
     uint256 private s_lastTimeStamp;
     address private s_recentWinner;
-    Rafflestate private s_Rafflestate;
+    Rafflestate public s_Rafflestate;
 
     event enteredRaffle(address indexed player);
     event WinnerPicked(address indexed winner);
@@ -181,6 +182,13 @@ contract Raffle is VRFConsumerBaseV2{
 
     function testing() public {
 
+    }
+
+    function getRaffleState() public view returns(Rafflestate){
+        return s_Rafflestate;
+    }
+    function  getPlayer(uint indexOfPlayer) public view returns(address){
+        return s_players[indexOfPlayer];
     }
 }
  
