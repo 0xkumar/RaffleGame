@@ -56,7 +56,7 @@ contract RaffleTest is  Test {
 
  function testRaffleRecordsPlayerWhenTheyEnter() public {
     vm.prank(PLAYER);
-    raffle.enterRaffle{value:entranceFee}();
+    raffle.enterRaffle{value:1 ether}();
     address playerRecorded =  raffle.getPlayer(0);
     assert(playerRecorded == PLAYER);
 
