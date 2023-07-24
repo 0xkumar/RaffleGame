@@ -57,7 +57,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         calculating
     }
 
-    uint16 private constant REQUEST_CONFIRMATIONS = 2;
+    uint16 private constant REQUEST_CONFIRMATIONS = 2;  
     uint8 private constant NUMWORDS = 1;
 
     uint private immutable i_entranceFee;
@@ -93,7 +93,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
 
     function enterRaffle() external  payable {
-        if(msg.value <= i_entranceFee){
+        if(msg.value < i_entranceFee){
             revert Raffle_NotEnoughEthSent();
         }
         if(s_Rafflestate != Rafflestate.open){
@@ -180,9 +180,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         return i_entranceFee;
     }
 
-    function testing() public {
 
-    }
 
     function getRaffleState() public view returns(Rafflestate){
         return s_Rafflestate;
